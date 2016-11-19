@@ -1,6 +1,6 @@
 # Image & File Dependencies
 
-Allows Image and File fields to be used in inputfield dependency selectors. Note: prefix field names with an underscore in your dependency selectors.
+A module for ProcessWire CMS/CMF. Allows Image and File fields to be used in inputfield dependency selectors. Note: prefix field names with an underscore in your dependency selectors.
 
 ## Usage
 
