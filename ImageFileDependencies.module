@@ -1,0 +1,87 @@
+<?php
+
+/**
+ *
+ * Image & File Dependencies
+ *
+ * @author Robin Sallis
+ *
+ * ProcessWire 3.x
+ * Copyright (C) 2011 by Ryan Cramer
+ * Licensed under GNU/GPL v2, see LICENSE.TXT
+ *
+ * http://www.processwire.com
+ * http://www.ryancramer.com
+ *
+ */
+
+class ImageFileDependencies extends WireData implements Module {
+
+	protected $flds = array();
+
+	/**
+	 * Module information
+	 */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Image & File Dependencies',
+			'version' => 1,
+			'summary' => 'Allows Image and File fields to be used in inputfield dependency selectors. Note: prefix field names with an underscore in your dependency selectors.',
+			'autoload' => "template=admin",
+		);
+	}
+
+	/**
+	 * Ready
+	 */
+	public function ready() {
+		// array of all Image and File field names
+		$this->flds = $this->fields->find("type=FieldtypeImage|FieldtypeFile")->explode('name');
+
+		// hooks
+		$this->addHookAfter('ProcessPageEdit::execute', $this, 'addScriptStyles');
+		$this->addHookAfter('ProcessPageEdit::buildFormContent', $this, 'appendToForm');
+	}
+
+	/**
+	 * Add script and styles
+	 */
+	public function addScriptStyles($event) {
+		// return if ProcessPageEdit is being loaded via AJAX (image field)
+		if($this->config->ajax) return;
+
+		// add js for updating count fields
+		$config = $this->config;
+		$info = $this->getModuleInfo();
+		$version = (int) $info['version'];
+		$config->scripts->add($config->urls->{$this->className} . "{$this->className}.js?v={$version}");
+
+		// add css for hiding count fields
+		$css = '';
+		foreach($this->flds as $fld) {
+		    $css .= "#wrap_Inputfield__$fld, ";
+		}
+		$css = rtrim($css, ', ') . '{ display:none; }';
+		$event->return .= "<style>$css</style>";
+	}
+
+	/**
+	 * Append fields to form
+	 */
+	public function appendToForm($event) {
+		$page = $event->object->getPage();
+		$form = $event->return;
+		// get Image and File fields in this form
+		$flds = $form->find("class=FieldtypeImage|FieldtypeFile");
+		// create and append new fields for storing the image/file count
+		foreach($flds as $fld) {
+			$name = $fld->name;
+			$count = $page->$name->count();
+			$f = $this->modules->get('InputfieldText');
+			$f->name = "_$name";
+			$f->value = $count;
+			$form->append($f);
+		}
+	}
+
+}
