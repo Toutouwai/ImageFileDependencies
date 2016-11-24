@@ -17,15 +17,13 @@
 
 class ImageFileDependencies extends WireData implements Module {
 
-	protected $flds = array();
-
 	/**
 	 * Module information
 	 */
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Image & File Dependencies',
-			'version' => 1,
+			'version' => 2,
 			'summary' => 'Allows Image and File fields to be used in inputfield dependency selectors. Note: prefix field names with an underscore in your dependency selectors.',
 			'autoload' => "template=admin",
 		);
@@ -35,9 +33,6 @@ class ImageFileDependencies extends WireData implements Module {
 	 * Ready
 	 */
 	public function ready() {
-		// array of all Image and File field names
-		$this->flds = $this->fields->find("type=FieldtypeImage|FieldtypeFile")->explode('name');
-
 		// hooks
 		$this->addHookAfter('ProcessPageEdit::execute', $this, 'addScriptStyles');
 		$this->addHookAfter('ProcessPageEdit::buildFormContent', $this, 'appendToForm');
@@ -57,12 +52,7 @@ class ImageFileDependencies extends WireData implements Module {
 		$config->scripts->add($config->urls->{$this->className} . "{$this->className}.js?v={$version}");
 
 		// add css for hiding count fields
-		$css = '';
-		foreach($this->flds as $fld) {
-		    $css .= "#wrap_Inputfield__$fld, ";
-		}
-		$css = rtrim($css, ', ') . '{ display:none; }';
-		$event->return .= "<style>$css</style>";
+		$event->return .= '<style>li[id^="wrap_Inputfield__"] { display:none !important; }</style>';
 	}
 
 	/**
