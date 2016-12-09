@@ -23,7 +23,7 @@ class ImageFileDependencies extends WireData implements Module {
 	public static function getModuleInfo() {
 		return array(
 			'title' => 'Image & File Dependencies',
-			'version' => 2,
+			'version' => 3,
 			'summary' => 'Allows Image and File fields to be used in inputfield dependency selectors. Note: prefix field names with an underscore in your dependency selectors.',
 			'autoload' => "template=admin",
 		);
@@ -52,7 +52,7 @@ class ImageFileDependencies extends WireData implements Module {
 		$config->scripts->add($config->urls->{$this->className} . "{$this->className}.js?v={$version}");
 
 		// add css for hiding count fields
-		$event->return .= '<style>li[id^="wrap_Inputfield__"] { display:none !important; }</style>';
+		$event->return .= "<style>li.{$this->className} { display:none !important; }</style>";
 	}
 
 	/**
@@ -69,6 +69,7 @@ class ImageFileDependencies extends WireData implements Module {
 			$count = $page->$name->count();
 			$f = $this->modules->get('InputfieldText');
 			$f->name = "_$name";
+			$f->wrapClass = $this->className;
 			$f->value = $count;
 			$form->append($f);
 		}
