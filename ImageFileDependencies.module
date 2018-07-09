@@ -25,6 +25,7 @@ class ImageFileDependencies extends WireData implements Module {
 			'title' => 'Image & File Dependencies',
 			'version' => 3,
 			'summary' => 'Allows Image and File fields to be used in inputfield dependency selectors. Note: prefix field names with an underscore in your dependency selectors.',
+			'author' => 'Robin Sallis',
 			'autoload' => "template=admin",
 		);
 	}
@@ -48,7 +49,7 @@ class ImageFileDependencies extends WireData implements Module {
 		// add js for updating count fields
 		$config = $this->config;
 		$info = $this->getModuleInfo();
-		$version = (int) $info['version'];
+		$version = $info['version'];
 		$config->scripts->add($config->urls->{$this->className} . "{$this->className}.js?v={$version}");
 
 		// add css for hiding count fields
