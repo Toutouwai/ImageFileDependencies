@@ -1,4 +1,4 @@
-$(function() {
+$(document).ready(function() {
 
 	$(document).on('AjaxUploadDone', function() {
 		updateCount();
